@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const socketIO = require('socket.io');
 const http = require('http');
+const { generateMessage } = require('./utils/message');
 
 const port = process.env.PORT || 3000;
 const publicPath = path.join(__dirname, '../public');
@@ -17,16 +18,14 @@ let io = socketIO(server);
 io.on('connection', socket => {
   console.log('new user connected');
 
-  socket.emit('newMessage', {
-    from: 'admin',
-    text: 'Welcome to the chat app!',
-    createdAt: new Date().getTime()
-  });
-  socket.broadcast.emit('newMessage', {
-    from: 'admin',
-    text: `New user has joined!`,
-    createdAt: new Date().getTime()
-  });
+  socket.emit(
+    'newMessage',
+    generateMessage('admin', 'Welcome to the chat app!')
+  );
+  socket.broadcast.emit(
+    'newMessage',
+    generateMessage('admin', 'A new user has joined the room!')
+  );
 
   socket.on('createMessage', newMessage => {
     console.log(
@@ -37,11 +36,10 @@ io.on('connection', socket => {
     //   text: newMessage.text,
     //   createdAt: new Date().getTime()
     // });
-    socket.broadcast.emit('newMessage', {
-      from: newMessage.from,
-      text: newMessage.text,
-      createdAt: new Date().getTime()
-    });
+    socket.broadcast.emit(
+      'newMessage',
+      generateMessage(newMessage.from, newMessage.text)
+    );
   });
   socket.on('disconnect', () => {
     console.log('user disconnected');
