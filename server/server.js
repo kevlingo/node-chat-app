@@ -37,7 +37,7 @@ io.on('connection', socket => {
     //   createdAt: new Date().getTime()
     // });
     let newMsg = generateMessage(newMessage.from, newMessage.text);
-    socket.broadcast.emit('newMessage', newMsg);
+    io.emit('newMessage', newMsg);
     callback(newMsg);
   });
   socket.on('disconnect', () => {
