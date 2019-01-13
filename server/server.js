@@ -21,7 +21,7 @@ io.on('connection', socket => {
     console.log(
       `message created: \nfrom: ${newMessage.from}\ntext: ${newMessage.text}`
     );
-    io.emit('newMessage', {
+    socket.broadcast.emit('newMessage', {
       from: newMessage.from,
       text: newMessage.text,
       createdAt: new Date().getTime()
