@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const socketIO = require('socket.io');
 const http = require('http');
-const { generateMessage } = require('./utils/message');
+const { generateMessage, generateLocationMessage } = require('./utils/message');
 
 const port = process.env.PORT || 3000;
 const publicPath = path.join(__dirname, '../public');
@@ -31,17 +31,15 @@ io.on('connection', socket => {
     console.log(
       `message created: \nfrom: ${newMessage.from}\ntext: ${newMessage.text}`
     );
-    // io.emit('newMessage', {
-    //   from: newMessage.from,
-    //   text: newMessage.text,
-    //   createdAt: new Date().getTime()
-    // });
     let newMsg = generateMessage(newMessage.from, newMessage.text);
     io.emit('newMessage', newMsg);
     callback(newMsg);
   });
   socket.on('disconnect', () => {
     console.log('user disconnected');
+  });
+  socket.on('createLocationMessage', coords => {
+    io.emit('newLocationMessage', generateLocationMessage('Admin', coords));
   });
 });
 
