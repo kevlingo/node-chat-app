@@ -8,6 +8,7 @@ const { generateMessage, generateLocationMessage } = require('./utils/message');
 const port = process.env.PORT || 3000;
 const publicPath = path.join(__dirname, '../public');
 
+let moment = require('moment');
 let app = express();
 app.use(bodyParser.json());
 app.use(express.static(publicPath));
