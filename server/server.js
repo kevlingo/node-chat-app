@@ -33,7 +33,7 @@ io.on('connection', socket => {
     );
     let newMsg = generateMessage(newMessage.from, newMessage.text);
     io.emit('newMessage', newMsg);
-    callback(newMsg);
+    callback();
   });
   socket.on('disconnect', () => {
     console.log('user disconnected');
