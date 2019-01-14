@@ -22,14 +22,12 @@ socket.on('connect', function() {
     if (err) {
       alert(err);
       window.location.href = '/';
-    } else {
-      console.log('no errors');
     }
   });
 });
 
 socket.on('disconnect', function() {
-  console.log('disconnected from server');
+  // console.log('disconnected from server');
 });
 
 socket.on('updateUserList', function(userList) {
@@ -67,13 +65,9 @@ socket.on('newLocationMessage', function(newMessage) {
 let msgTextBox = $('#message');
 $('#message-form').submit(function(e) {
   e.preventDefault();
-  socket.emit(
-    'createMessage',
-    { from: 'User', text: msgTextBox.val() },
-    function() {
-      msgTextBox.val('');
-    }
-  );
+  socket.emit('createMessage', { text: msgTextBox.val() }, function() {
+    msgTextBox.val('');
+  });
 });
 
 let btnLocation = $('#sendLocation');

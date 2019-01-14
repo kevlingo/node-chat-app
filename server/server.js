@@ -18,8 +18,6 @@ let io = socketIO(server);
 let users = new Users();
 
 io.on('connection', socket => {
-  console.log('new user connected');
-
   socket.on('join', (params, callback) => {
     if (!isRealString(params.name) || !isRealString(params.room)) {
       return callback('Name and room name are required');
@@ -44,11 +42,11 @@ io.on('connection', socket => {
     callback();
   });
   socket.on('createMessage', (newMessage, callback) => {
-    console.log(
-      `message created: \nfrom: ${newMessage.from}\ntext: ${newMessage.text}`
-    );
-    let newMsg = generateMessage(newMessage.from, newMessage.text);
-    io.emit('newMessage', newMsg);
+    let user = users.getUser(socket.id);
+    if (user && isRealString(newMessage.text)) {
+      let newMsg = generateMessage(user.name, newMessage.text);
+      io.to(user.room).emit('newMessage', newMsg);
+    }
     callback();
   });
   socket.on('disconnect', () => {
@@ -62,7 +60,13 @@ io.on('connection', socket => {
     }
   });
   socket.on('createLocationMessage', coords => {
-    io.emit('newLocationMessage', generateLocationMessage('Admin', coords));
+    let user = users.removeUser(socket.id);
+    if (user) {
+      io.to(user.room).emit(
+        'newLocationMessage',
+        generateLocationMessage(user.name, coords)
+      );
+    }
   });
 });
 
