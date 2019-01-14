@@ -16,11 +16,28 @@ function scrollToBottom() {
   }
 }
 socket.on('connect', function() {
-  console.log('connected to server');
+  let params = $.deparam(window.location.search);
+
+  socket.emit('join', params, function(err) {
+    if (err) {
+      alert(err);
+      window.location.href = '/';
+    } else {
+      console.log('no errors');
+    }
+  });
 });
 
 socket.on('disconnect', function() {
   console.log('disconnected from server');
+});
+
+socket.on('updateUserList', function(userList) {
+  let ol = $('<ol></ol>');
+  userList.forEach(function(user) {
+    ol.append($('<li></li>').text(user));
+  });
+  $('#users').html(ol);
 });
 
 socket.on('newMessage', function(newMessage) {
